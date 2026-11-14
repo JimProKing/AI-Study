@@ -1,37 +1,33 @@
 BOOK.add({
   no: 9,
-  title: "컴퓨터 비전을 위한 고급 딥러닝",
-  short: "고급 컴퓨터 비전",
-  one: "잔차 연결 + 배치 정규화 + 분리 합성곱 = 최신 컨브넷의 기본기",
+  title: "컨브넷 아키텍처 패턴",
+  short: "컨브넷 아키텍처",
+  one: "블록을 만들고, 쌓고, 재사용한다 + 잔차 · BN · 분리 합성곱",
   cards: [
     {
-      id: "9.1-tasks", sec: "9.1", title: "컴퓨터 비전 3대 작업",
-      fig: { h: 214, alt: "이미지 분류는 라벨, 이미지 분할은 픽셀별 영역, 객체 탐지는 사각형 상자를 낸다", f: k => {
-        const scene = (x) => [
-          k.box(x, 30, 200, 130, ""),
-          k.circle(x + 62, 100, 32, null, { fill: "orange" }),
-          k.path(`M${x + 120} 140L${x + 150} 72L${x + 180} 140Z`, { arrow: false, fill: "blue-a" }),
-        ];
-        return [
-          ...scene(20), k.box(28, 38, 70, 24, "고양이", { fill: "yellow", size: 12 }),
-          ...scene(280),
-          k.raw(`<circle class="mark m-red" cx="342" cy="100" r="34"/>`), k.path("M398 142L430 70L462 142Z", { arrow: false, fill: "mint-a" }),
-          ...scene(540),
-          k.box(568, 66, 68, 68, "", { fill: "none", color: "red", thick: true }), k.box(656, 68, 64, 76, "", { fill: "none", color: "teal", thick: true }),
-          k.ctext(120, 186, "① 이미지 분류", { bold: true, size: 14, u: true }), k.ctext(380, 186, "② 이미지 분할", { bold: true, size: 14, u: true }), k.ctext(640, 186, "③ 객체 탐지", { bold: true, size: 14, u: true }),
-          k.ctext(120, 206, "이미지 → 라벨", { size: 12, color: "muted" }), k.ctext(380, 206, "픽셀마다 → 라벨", { size: 12, color: "muted" }), k.ctext(640, 206, "물체마다 → 상자 + 라벨", { size: 12, color: "muted" }),
-        ];
+      id: "9.1-mhr", sec: "9.1", title: "모듈화 · 계층화 · 재사용",
+      fig: { h: 226, alt: "같은 구조의 블록을 반복해서 쌓아 모델을 만든다", f: k => {
+        const out = [k.oval(50, 100, 34, 24, "입력")];
+        ["블록 ①", "블록 ②", "블록 ③"].forEach((b, i) => {
+          const x = 110 + i * 200;
+          out.push(k.box(x, 30, 170, 140, "", { fill: "mint" }), k.text(x + 10, 46, b, { bold: true, size: 13 }));
+          ["Conv", "배치 정규화", "relu"].forEach((l, j) => out.push(k.box(x + 15, 60 + j * 34, 140, 28, l, { size: 12 })));
+          out.push(k.arrow(i === 0 ? 86 : x - 28, 100, x - 2, 100));
+        });
+        out.push(k.arrow(682, 100, 730, 100));
+        out.push(k.red(110, 200, "같은 블록을 반복 = 재사용, 쌓을수록 추상적 = 계층화", { size: 17 }));
+        return out;
       } },
       pts: [
-        "· ==이미지 분류==: 이미지 하나에 라벨 하나 (또는 여러 개)",
-        "· ==이미지 분할==: 픽셀 단위로 영역 나누기 (시맨틱 분할 / 인스턴스 분할)",
-        "· ==객체 탐지==: 물체 위치에 사각형(바운딩 박스) + 라벨",
-        "· 9.2 예제: 분할 모델 = Conv로 줄이고 `Conv2DTranspose` 로 다시 원래 크기로 키움",
+        "· ==모듈화==: 복잡한 걸 재사용 가능한 블록으로 나눔",
+        "· ==계층화==: 블록을 쌓아 단순한 특성 → 추상적 특성",
+        "· ==재사용==: 같은 블록 구조를 여러 번 (보통 깊어질수록 필터 수 ↑, 크기 ↓)",
+        "· 모델 아키텍처 = 문제에 대한 ==핵심 가정==을 담은 것",
       ],
-      end: "*결국, '뭐가' → '어디에 픽셀로' → '어디에 상자로'",
+      end: "*결국, 좋은 아키텍처 = 잘 만든 블록 하나를 반복",
     },
     {
-      id: "9.3-residual", sec: "9.3.2", title: "잔차 연결",
+      id: "9.2-residual", sec: "9.2", title: "잔차 연결",
       fig: { h: 220, alt: "입력 x를 블록을 건너뛰어 출력에 더하는 잔차 연결", f: k => [
         k.oval(70, 120, 40, 26, "x"),
         k.arrow(112, 120, 176, 120),
@@ -46,12 +42,12 @@ BOOK.add({
       pts: [
         "· 층이 깊어지면 ==그레이디언트 소실==: 앞쪽 층까지 학습 신호가 거의 안 감",
         "· ==잔차 연결==: 블록의 입력을 출력에 더함 → 정보 · 그레이디언트의 고속도로",
-        "· 크기가 다르면 `Conv2D(필터 수, 1)` (1×1 합성곱)로 맞춰서 더함",
+        "· 크기가 다르면 1×1 합성곱으로 맞춰서 더함",
       ],
       end: "*결국, 깊게 쌓으려면 지름길을 깔아라",
     },
     {
-      id: "9.3-batchnorm", sec: "9.3.3", title: "배치 정규화",
+      id: "9.3-batchnorm", sec: "9.3", title: "배치 정규화",
       fig: { h: 214, alt: "들쭉날쭉한 분포를 평균 0, 분산 1로 맞추는 배치 정규화", f: k => [
         k.plot(30, 40, 260, 130, { xl: "값", curves: [{ f: t => 0.85 * Math.exp(-((t - 0.72) ** 2) / 0.006), color: "muted", thick: true }, { f: t => 0.5 * Math.exp(-((t - 0.3) ** 2) / 0.03), color: "muted", dash: true }] }),
         k.ctext(160, 200, "층마다 들쭉날쭉한 분포", { size: 12, color: "muted" }),
@@ -64,12 +60,12 @@ BOOK.add({
         "· 추론 때는 훈련 중 모아 둔 이동 평균을 사용",
         "· 효과: 그레이디언트 전파가 쉬워짐 → 더 깊은 모델 훈련 가능",
         "· 요령: Conv/Dense 층은 `use_bias=False`, 활성화는 BN ==뒤에== 적용",
-        "· 미세 조정할 때 BN 층은 동결해 두는 게 좋음",
+        "· 미세 튜닝할 때 BN 층은 동결해 두는 게 좋음",
       ],
       end: "*결국, 층 사이 값을 늘 비슷한 범위로 정돈",
     },
     {
-      id: "9.3-separable", sec: "9.3.4", title: "깊이별 분리 합성곱",
+      id: "9.4-separable", sec: "9.4", title: "깊이별 분리 합성곱",
       fig: { h: 222, alt: "채널마다 따로 공간 합성곱을 한 뒤 1×1 합성곱으로 채널을 섞는다", f: k => [
         k.text(20, 22, "일반 Conv: 공간 + 채널을 한꺼번에", { size: 13, color: "muted" }),
         k.cube(30, 80, 3, 3, 3, { cw: 18, fill: "orange", backfill: "orange" }),
@@ -86,35 +82,30 @@ BOOK.add({
       pts: [
         "· 가정: ==공간 패턴==과 ==채널 간 관계==는 서로 독립 → 따로 배워도 됨",
         "· `SeparableConv2D` 층 하나로 사용",
-        "· 9.3.5 ==Xception== 스타일: 블록 반복 + 잔차 연결 + 배치 정규화 + 분리 합성곱",
+        "· 9.5 ==Xception== 스타일: 블록 반복 + 잔차 연결 + 배치 정규화 + 분리 합성곱",
       ],
       end: "*결국, 한 번에 할 일을 두 번에 나눠서 싸고 빠르게",
     },
     {
-      id: "9.4-interpret", sec: "9.4", title: "컨브넷이 본 것 해석하기",
-      fig: { h: 214, alt: "중간 활성화, 필터 패턴, 클래스 활성화 히트맵 세 가지 시각화", f: k => {
-        const heat = [];
-        for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) heat.push(Math.max(0, 1 - Math.hypot(i - 2.2, j - 3.4) / 3));
-        const stripes = [];
-        for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) stripes.push((i + j) % 3 === 0 ? 1 : 0.1);
-        return [
-          ...[0, 1, 2, 3].map(i => k.grid(30 + (i % 2) * 78, 30 + Math.floor(i / 2) * 78, 5, 5, null, { cw: 14, thin: true, heat: Array.from({ length: 25 }, (_, n) => ((n * (i + 3)) % 7) / 7) })),
-          k.ctext(110, 196, "① 중간 활성화", { bold: true, size: 14, u: true }),
-          k.grid(300, 40, 6, 6, null, { cw: 22, thin: true, heat: stripes, heatc: "orange" }),
-          k.ctext(366, 196, "② 필터 시각화", { bold: true, size: 14, u: true }),
-          k.box(540, 36, 150, 140, ""),
-          k.grid(540, 36, 6, 6, null, { cw: 25, thin: true, heat, heatc: "red" }),
-          k.circle(625, 96, 26, null, { fill: "none" }),
-          k.ctext(615, 196, "③ 클래스 활성화 맵", { bold: true, size: 14, u: true }),
-        ];
-      } },
+      id: "9.6-vit", sec: "9.6", title: "비전 트랜스포머 (ViT)",
+      fig: { h: 222, alt: "이미지를 패치로 자르고 펼쳐 시퀀스로 만든 뒤 트랜스포머로 처리한다", f: k => [
+        k.grid(30, 40, 3, 3, [1, 2, 3, 4, 5, 6, 7, 8, 9], { cw: 40, fill: "orange" }),
+        k.ctext(90, 180, "이미지 → 패치", { size: 12, color: "muted" }),
+        k.arrow(160, 100, 200, 100, { label: "펼치기" }),
+        k.cells(206, 82, [1, 2, 3, 4, 5, 6, 7, 8, 9], { cw: 30, fill: "orange" }),
+        k.ctext(341, 136, "패치 시퀀스", { size: 12, color: "muted" }),
+        k.arrow(480, 98, 516, 98),
+        k.box(520, 70, 120, 56, "트랜스포머", { fill: "yellow", bold: true, sub: "15장" }),
+        k.arrow(642, 98, 676, 98), k.oval(710, 98, 32, 22, "분류", { size: 13 }),
+        k.red(206, 186, "큰 데이터 → ViT 강함 / 작은 데이터 → 여전히 컨브넷", { size: 17 }),
+      ] },
       pts: [
-        "· ① ==중간 활성화==: 층마다 특성 맵을 이미지로 → 아래층은 모서리, 위층일수록 추상적",
-        "· ② ==필터 시각화==: 입력 공간에 경사 상승법 → 필터가 가장 좋아하는 패턴",
-        "· ③ ==클래스 활성화 맵==(Grad-CAM): 이 클래스로 판단한 근거가 이미지의 어디인지 히트맵",
-        "· 컨브넷은 블랙박스가 아님!",
+        "· ==ViT==: 이미지를 1D ==패치 시퀀스==로 바꿔 트랜스포머로 처리",
+        "· 장점: 이미지의 먼 부분 사이 ==장거리 관계==를 잘 잡음",
+        "· 작은 데이터셋엔 불리: 컨브넷이 가진 '지역 구조' 가정이 없어서 데이터가 많이 필요",
+        "· 대규모 이미지 생성 모델(17장)에서 다시 만남",
       ],
-      end: "*결국, 모델이 '어디를 보고' 판단했는지 눈으로 확인 가능",
+      end: "*결국, 데이터가 크면 ViT, 작으면 컨브넷",
     },
   ],
 });

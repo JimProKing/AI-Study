@@ -1,7 +1,7 @@
 BOOK.add({
   no: 8,
-  title: "컴퓨터 비전을 위한 딥러닝",
-  short: "컴퓨터 비전",
+  title: "이미지 분류",
+  short: "이미지 분류",
   one: "작은 창으로 훑으며 지역 패턴을 층층이 쌓는다 = 컨브넷",
   cards: [
     {
@@ -69,7 +69,8 @@ BOOK.add({
         return out;
       } },
       pts: [
-        "· 데이터: 강아지 vs 고양이 사진, 훈련 ==2,000장==으로 밑바닥부터 훈련",
+        "· 데이터: 강아지 vs 고양이 사진, 훈련 ==2,000장== / 검증 1,000 / 테스트 2,000",
+        "· 정확도: 밑바닥부터 약 70% → !!데이터 증강 80~85%!! → !!사전 훈련 특성 추출 97.5%!! (8.3)",
         "· `image_dataset_from_directory` 로 폴더에서 바로 데이터셋 만들기",
         "· 입력은 `Rescaling(1./255)` 로 0~1 스케일",
         "· 특성 맵: 깊이 32 → 256 증가, 크기 180 → 7 감소 (컨브넷 공통 패턴)",
@@ -77,12 +78,12 @@ BOOK.add({
       end: "*결국, Conv → Pool 반복 → Flatten → Dense",
     },
     {
-      id: "8.2-augment", sec: "8.2.5", title: "데이터 증식",
+      id: "8.2-augment", sec: "8.2.5", title: "데이터 증강",
       fig: { h: 212, alt: "고양이 사진 한 장을 뒤집기, 회전, 확대로 여러 장처럼 만든다", f: k => {
         const cat = `<circle class="sh f-orange" cx="0" cy="4" r="24"/><path class="sh f-orange" d="M-20 -8L-16 -30L-4 -18ZM20 -8L16 -30L4 -18Z"/><circle class="dot d-ink" cx="-8" cy="2" r="3"/><circle class="dot d-ink" cx="8" cy="2" r="3"/><path class="ln s-ink" d="M-4 12Q0 16 4 12"/><circle class="dot d-red" cx="14" cy="-16" r="3.5"/>`;
         const g = (cx, cy, t) => k.raw(`<g transform="translate(${cx} ${cy}) ${t}">${cat}</g>`);
         const out = [k.box(20, 50, 100, 100, ""), g(70, 102, ""), k.ctext(70, 170, "원본", { size: 13, bold: true })];
-        out.push(k.arrow(124, 100, 196, 100, { label: "증식" }));
+        out.push(k.arrow(124, 100, 196, 100, { label: "증강" }));
         [["RandomFlip", "scale(-1 1)"], ["RandomRotation", "rotate(18)"], ["RandomZoom", "scale(1.3)"], ["조합", "scale(-1 1) rotate(-14)"]].forEach(([l, t], i) => {
           const x = 200 + i * 135;
           out.push(k.box(x, 50, 110, 100, "", { fill: "mint" }), g(x + 55, 102, t), k.ctext(x + 55, 170, l, { size: 12, mono: i < 3 }));
@@ -92,7 +93,7 @@ BOOK.add({
       } },
       pts: [
         "· 작은 데이터셋 → 과대적합이 최대 문제",
-        "· ==데이터 증식==: 그럴듯한 랜덤 변환으로 샘플을 늘림",
+        "· ==데이터 증강==: 그럴듯한 랜덤 변환으로 샘플을 늘림",
         "· 케라스 층으로 모델 앞에 붙임: `RandomFlip`, `RandomRotation`, `RandomZoom`",
         "· 추론(predict) 때는 자동으로 꺼짐",
         "· 드롭아웃과 같이 쓰면 효과 ↑",
@@ -101,12 +102,12 @@ BOOK.add({
     },
     {
       id: "8.3-pretrained", sec: "8.3", title: "사전 훈련된 모델 활용",
-      fig: { h: 228, alt: "특성 추출은 합성곱 기반 전체를 동결하고, 미세 조정은 상위 층 일부를 풀어 다시 학습한다", f: k => [
+      fig: { h: 228, alt: "특성 추출은 합성곱 기반 전체를 동결하고, 미세 튜닝은 상위 층 일부를 풀어 다시 학습한다", f: k => [
         k.text(20, 45, "① 특성 추출", { bold: true, size: 14 }),
-        k.box(150, 20, 300, 50, "VGG16 합성곱 기반", { fill: "blue", sub: "전체 동결" }),
+        k.box(150, 20, 300, 50, "Xception 합성곱 기반", { fill: "blue", sub: "전체 동결" }),
         k.arrow(452, 45, 486, 45), k.box(490, 20, 180, 50, "새 분류기", { sub: "Dense", fill: "yellow" }),
         k.text(150, 88, "ImageNet으로 미리 훈련된 가중치", { size: 12, color: "muted" }),
-        k.text(20, 135, "② 미세 조정", { bold: true, size: 14 }),
+        k.text(20, 135, "② 미세 튜닝", { bold: true, size: 14 }),
         k.box(150, 110, 200, 50, "하위 층", { fill: "blue", sub: "동결" }),
         k.box(350, 110, 100, 50, "상위 층", { fill: "mint", sub: "조금 학습" }),
         k.arrow(452, 135, 486, 135), k.box(490, 110, 180, 50, "새 분류기", { fill: "yellow" }),
@@ -117,7 +118,7 @@ BOOK.add({
         "· 하위 층 = 일반적인 특성 (모서리 · 색 · 질감) → 재사용 가치 큼",
         "· 상위 층 = 원래 문제에 특화된 특성",
         "· `conv_base.trainable = False` 로 동결",
-        "· 미세 조정은 ==분류기를 먼저 훈련한 뒤==에: 안 그러면 큰 오차 신호가 사전 학습 표현을 망침",
+        "· 미세 튜닝은 ==분류기를 먼저 훈련한 뒤==에: 안 그러면 큰 오차 신호가 사전 학습 표현을 망침",
       ],
       end: "*결국, 남이 잘 배운 눈을 빌려 쓰기",
     },

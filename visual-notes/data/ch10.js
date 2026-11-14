@@ -1,76 +1,76 @@
 BOOK.add({
   no: 10,
-  title: "시계열을 위한 딥러닝",
-  short: "시계열",
-  one: "순서가 중요한 데이터 → 상태를 가진 순환 신경망",
+  title: "컨브넷이 학습한 것 해석하기",
+  short: "컨브넷 해석",
+  one: "컨브넷은 블랙박스가 아니다: 활성화 · 필터 · 히트맵 · 잠재 공간",
   cards: [
     {
-      id: "10.2-temperature", sec: "10.2", title: "온도 예측 문제",
-      fig: { h: 228, alt: "지난 5일 데이터 창으로 24시간 뒤 온도를 예측한다", f: k => [
-        k.plot(30, 24, 560, 160, { xl: "시간", yl: "온도",
-          bands: [{ from: 0.18, to: 0.62, c: "yellow", label: "입력: 지난 5일 (시간당 1개 = 120 스텝)" }],
-          curves: [{ f: t => 0.5 + 0.25 * Math.sin(t * 28) + 0.12 * Math.sin(t * 5), color: "ink", to: 0.62 }, { f: t => 0.5 + 0.25 * Math.sin(t * 28) + 0.12 * Math.sin(t * 5), color: "muted", dash: true, from: 0.62, to: 0.78 }],
-          pts: [[0.76, 0.5 + 0.25 * Math.sin(0.76 * 28) + 0.12 * Math.sin(0.76 * 5), "24시간 뒤?", "red", 6, "red"]] }),
-        k.box(610, 30, 130, 60, "기준점", { sub: "내일 = 오늘 같은 시각", fill: "mint", ss: 11 }),
-        k.red(612, 124, "MAE 2.44°C\n이걸 넘어야 함", { size: 18 }),
-      ] },
-      pts: [
-        "· 데이터: 예나 기후 (특성 14개, 10분 간격) → 시간당 1개로 샘플링",
-        "· 분할: 훈련 50% / 검증 25% / 테스트 25%, ==시간 순서대로== (섞지 X)",
-        "· `timeseries_dataset_from_array` 로 (입력 창, 타깃) 배치 생성",
-        "· ==상식 수준의 기준점==: \"24시간 뒤 = 지금 온도\" → 검증 MAE 2.44°C",
-        "· Dense, 1D Conv 모델은 기준점을 잘 못 넘음 → 순서 정보가 중요",
-      ],
-      end: "*결국, 기준점부터 정하고 그걸 넘는지로 판단",
-    },
-    {
-      id: "10.3-rnn", sec: "10.3", title: "순환 신경망 (RNN)",
-      fig: { h: 232, alt: "RNN 셀이 상태를 다음 타임스텝으로 넘기며 시퀀스를 처리한다", f: k => {
-        const out = [k.box(30, 80, 100, 60, "RNN", { fill: "yellow", bold: true }), k.path("M130 96C170 96 170 50 80 50C40 50 50 70 60 78", { color: "red" }),
-          k.red(140, 44, "상태", { size: 17 }), k.arrow(80, 182, 80, 142, { label: "x_t", lx: 18, ly: 0 }), k.arrow(80, 78, 80, 70),
-          k.ctext(200, 112, "=", { size: 26, bold: true }), k.ctext(200, 140, "펼치면", { size: 12, color: "muted" })];
-        ["t-1", "t", "t+1"].forEach((t, i) => {
-          const x = 250 + i * 160;
-          out.push(k.box(x, 80, 100, 60, "RNN", { fill: "yellow" }));
-          out.push(k.arrow(x + 50, 182, x + 50, 142, { label: "x_" + t, lx: 22, ly: 0 }));
-          out.push(k.arrow(x + 50, 78, x + 50, 40, { label: "출력_" + t, lx: 34, ly: 4 }));
-          if (i < 2) out.push(k.arrow(x + 102, 110, x + 158, 110, { color: "red", label: "상태", lc: "red" }));
-        });
-        out.push(k.red(250, 218, "output_t = tanh(W·x_t + U·state_t + b)", { size: 17 }));
-        return out;
+      id: "10.1-activations-filters", sec: "10.1~10.2", title: "중간 활성화와 필터 시각화",
+      fig: { h: 214, alt: "층별 특성 맵과 필터가 반응하는 패턴을 그림으로 본다", f: k => {
+        const stripes = [];
+        for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) stripes.push((i + j) % 3 === 0 ? 1 : 0.1);
+        return [
+          ...[0, 1, 2, 3].map(i => k.grid(30 + (i % 2) * 78, 30 + Math.floor(i / 2) * 78, 5, 5, null, { cw: 14, thin: true, heat: Array.from({ length: 25 }, (_, n) => ((n * (i + 3)) % 7) / 7) })),
+          k.ctext(110, 196, "① 중간 활성화", { bold: true, size: 14, u: true }),
+          k.grid(300, 40, 6, 6, null, { cw: 22, thin: true, heat: stripes, heatc: "orange" }),
+          k.ctext(366, 196, "② 필터 시각화", { bold: true, size: 14, u: true }),
+          k.red(480, 60, "아래층: 에지 · 질감\n위층: 점점 추상적", { size: 18 }),
+          k.red(480, 140, "필터 = 입력에 경사 상승\n→ 가장 좋아하는 패턴", { size: 17 }),
+        ];
       } },
       pts: [
-        "· ==RNN==: 상태(state)를 가진 for 루프. 이전 스텝 정보를 다음 스텝으로 넘김",
-        "· `SimpleRNN` 은 길어지면 ==그레이디언트 소실== → 실전 X",
-        "· ==LSTM==: 정보를 실어 나르는 '이동 벨트'를 추가 → 먼 과거 정보 유지",
-        "· ==GRU==: LSTM을 단순화, 더 가벼움",
-        "· 입력 크기 `(batch, timesteps, features)`, `return_sequences=True` 면 매 스텝 출력",
+        "· ① ==중간 활성화==: 층마다 특성 맵을 이미지로 그려 봄",
+        "· ② ==필터 시각화==: 빈 이미지에서 시작, 필터 반응이 커지도록 ==경사 상승법== → 필터가 감지하는 패턴",
+        "  · 책은 텐서플로 · 파이토치 · JAX 세 버전으로 경사 상승을 구현",
       ],
-      end: "*결국, RNN = 기억을 들고 다니며 순서대로 읽는 층",
+      end: "*결국, 아래층은 선과 색, 위층은 '귀', '눈' 같은 개념",
     },
     {
-      id: "10.4-advanced-rnn", sec: "10.4", title: "순환 신경망 고급 기법",
-      fig: { h: 232, alt: "순환 드롭아웃, 스태킹 RNN, 양방향 RNN 세 가지", f: k => [
-        k.text(20, 22, "① 순환 드롭아웃", { bold: true, size: 14 }),
-        k.nn(40, 50, 160, 110, [3, 4, 3], { drop: ["1-1", "1-3"] }),
-        k.text(20, 196, "LSTM(32, recurrent_dropout=0.25)", { mono: true, size: 11 }),
-        k.text(270, 22, "② 스태킹", { bold: true, size: 14 }),
-        k.box(280, 50, 160, 40, "LSTM", { fill: "mint" }), k.box(280, 110, 160, 40, "LSTM", { fill: "mint" }),
-        k.arrow(360, 108, 360, 92), k.arrow(360, 172, 360, 152),
-        k.text(270, 196, "return_sequences=True 필수", { mono: true, size: 11 }),
-        k.text(500, 22, "③ 양방향", { bold: true, size: 14 }),
-        k.cells(510, 92, ["x₁", "x₂", "x₃", "x₄"], { cw: 50 }),
-        k.arrow(510, 76, 710, 76, { color: "teal", label: "정방향 RNN", lc: "teal" }),
-        k.arrow(710, 146, 510, 146, { color: "red", label: "역방향 RNN", lc: "red", ly: 16 }),
-        k.text(500, 196, "Bidirectional(LSTM(16))", { mono: true, size: 11 }),
+      id: "10.3-gradcam", sec: "10.3", title: "클래스 활성화 히트맵 (Grad-CAM)",
+      fig: { h: 222, alt: "마지막 합성곱 층의 특성 맵에 클래스 그레이디언트로 가중치를 줘서 히트맵을 만든다", f: k => {
+        const heat = [];
+        for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) heat.push(Math.max(0, 1 - Math.hypot(i - 2.2, j - 3.4) / 3));
+        return [
+          k.box(20, 50, 110, 110, "", { fill: "orange" }), k.ctext(75, 178, "입력 이미지", { size: 12, color: "muted" }),
+          k.arrow(132, 105, 168, 105),
+          k.box(172, 70, 110, 70, "컨브넷", { fill: "blue", sub: "마지막 Conv 층" }),
+          k.arrow(284, 105, 320, 105, { label: "특성 맵" }),
+          k.cube(330, 104, 3, 3, 3, { cw: 16, fill: "mint", backfill: "mint" }),
+          k.box(330, 150, 110, 36, "× 클래스 그레이디언트", { size: 11, fill: "yellow" }),
+          k.arrow(446, 105, 500, 105, { label: "채널 가중 평균" }),
+          k.grid(520, 40, 6, 6, null, { cw: 20, thin: true, heat, heatc: "red" }),
+          k.ctext(580, 178, "히트맵", { size: 12, color: "muted" }),
+          k.red(640, 70, "'고양이'라고\n본 근거가\n여기!", { size: 17 }),
+        ];
+      } },
+      pts: [
+        "· ==Grad-CAM==: 예측한 클래스에 대해 마지막 합성곱 층 출력의 그레이디언트를 구함",
+        "· 그레이디언트로 각 채널의 중요도를 매기고 → 특성 맵을 가중 평균 → 히트맵",
+        "· 히트맵을 원본 이미지에 겹치면 '어디를 보고 판단했는지' 보임",
+      ],
+      end: "*결국, 모델의 판단 근거를 이미지 위에 칠하기",
+    },
+    {
+      id: "10.4-latent-space", sec: "10.4", title: "컨브넷의 잠재 공간 시각화",
+      fig: { h: 226, alt: "분류 층 직전 층의 활성화를 2차원으로 줄여 그리면 비슷한 이미지끼리 모인다", f: k => [
+        k.flow(30, [
+          { t: "이미지들", shape: "oval", fill: "orange" },
+          { t: "분류 직전 층", sub: "활성화 기록" },
+          { t: "고차원 좌표", sub: "예: 수백 차원" },
+          { t: "2D로 축소", fill: "yellow" },
+        ], { x1: 470, gap: 30, h: 56 }),
+        k.plot(500, 20, 230, 170, { pts: [
+          [0.15, 0.75, "", "orange"], [0.22, 0.85, "", "orange"], [0.1, 0.65, "", "orange"], [0.25, 0.7, "", "orange"],
+          [0.7, 0.3, "", "blue"], [0.8, 0.2, "", "blue"], [0.75, 0.38, "", "blue"], [0.62, 0.22, "", "blue"],
+          [0.6, 0.8, "", "mint"], [0.7, 0.88, "", "mint"], [0.55, 0.7, "", "mint"]] }),
+        k.red(20, 160, "비슷한 이미지 = 가까운 점\n→ 위층일수록 의미대로 정리됨", { size: 18 }),
       ] },
       pts: [
-        "· ① 순환 층에 드롭아웃은 ==타임스텝마다 같은 마스크== → `recurrent_dropout`",
-        "· ② ==스태킹==: 순환 층을 여러 개 쌓아 표현력 ↑ (계산 비용 ↑)",
-        "· ③ ==양방향==: 앞→뒤, 뒤→앞 둘 다 읽고 합침. 텍스트엔 강력, 날씨처럼 최근이 중요한 시계열엔 별로",
-        "· 드롭아웃 규제한 LSTM → 검증 MAE 2.27°C까지 개선 (기준점 2.44°C)",
+        "· ==잠재 공간==: 가까운 점 = 의미가 비슷한 입력이 되는 공간 (매니폴드)",
+        "· 방법: 보통 분류 층 직전 층을 골라 입력마다 활성화를 기록 → 2D로 줄여서 그림",
+        "· 위층으로 갈수록 잠재 공간이 의미적으로 정리됨 = 구겨진 종이 공이 펴짐 (2장)",
       ],
-      end: "*결국, 기준점 2.44 → 2.27. 순서를 존중하면 이긴다",
+      end: "*결국, 모델이 이미지를 '어떻게 묶어 보는지' 지도로 보기",
     },
   ],
 });

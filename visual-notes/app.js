@@ -269,7 +269,7 @@
       ["pen", "빨간 펜 = 내 말", "주석, 그리고 \"*결국 ~이 본질\" 결론."],
     ];
     $("#main").innerHTML = `<section class="hero">
-        <p class="eyebrow">케라스 창시자에게 배우는 딥러닝 개정 2판</p>
+        <p class="eyebrow">케라스 창시자에게 배우는 딥러닝 개정 3판</p>
         <h1><span>케라스 딥러닝 공책</span></h1>
         <p class="lede">책의 긴 글을 <span class="u">내 필기 형식</span>으로 뜯어서 그림 ${cards.length}장으로 만들었어요. 그림을 보고 공책에 옮겨 그리면서 이해하고, 다 쓴 필기는 사진으로 올려요.</p>
         <div class="stats"><div><b>${BOOK.chapters.length}</b><span>장</span></div><div><b>${cards.length}</b><span>그림</span></div><div><b>${mine.length}</b><span>내 필기</span></div></div>

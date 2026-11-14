@@ -1,6 +1,6 @@
 BOOK.add({
   no: 4,
-  title: "신경망 시작하기: 분류와 회귀",
+  title: "분류와 회귀",
   short: "분류와 회귀",
   one: "문제 유형에 맞는 마지막 층 + 손실 함수 고르기",
   cards: [
@@ -72,6 +72,7 @@ BOOK.add({
         "· 레이블 인코딩 2가지",
         "  · ① 원-핫 → `categorical_crossentropy`",
         "  · ② 정수 그대로 → `sparse_categorical_crossentropy`",
+        "· 정확도 80% 가까이 (랜덤 분류기는 약 19%)",
         "· 중간층은 클래스 수보다 충분히 크게 (16차원으로 46개 구분은 빠듯)",
       ],
       end: "*결국, 다중 분류 = Dense(N, softmax) + categorical_crossentropy",
@@ -85,7 +86,7 @@ BOOK.add({
           k.text(20, 130, "② 출력", { bold: true, size: 14 }),
           k.box(20, 146, 210, 44, "Dense(1)", { sub: "활성화 없음", fill: "mint", mono: true }),
           k.red(20, 214, "손실 mse · 지표 mae", { size: 17 }),
-          k.text(270, 22, "③ K-겹 검증 (K = 3)", { bold: true, size: 14 }),
+          k.text(270, 22, "③ K-겹 검증 (그림은 K = 3)", { bold: true, size: 14 }),
         ];
         for (let i = 0; i < 3; i++) {
           const y = 44 + i * 44;
@@ -93,15 +94,16 @@ BOOK.add({
           out.push(k.text(590, y + 17, "→ 점수 " + (i + 1), { size: 13 }));
         }
         out.push(k.red(590, 184, "평균 = 최종 점수", { size: 17 }));
-        out.push(k.red(270, 214, "데이터가 적을 때 (훈련 404개) 믿을 만한 평가", { size: 16 }));
+        out.push(k.red(270, 214, "데이터가 적을 때 (훈련 480개) 믿을 만한 평가", { size: 16 }));
         return out;
       } },
       pts: [
-        "· ==보스턴 주택 가격==: 훈련 404개 / 테스트 102개, 특성 13개, 타깃 = 중간 가격(천 달러)",
+        "· ==캘리포니아 주택 가격== (소규모 버전): 훈련 480개 / 테스트 120개, 특성 8개 (위도 · 경도 · 주택 연령 · 소득 등)",
+        "  · 타깃 = 구역의 주택 가격 중앙값 (10만 달러 단위 → MAE 0.5 = 약 5만 달러 차이)",
         "· 특성마다 범위가 다름 → ==특성별 정규화== (평균·표준편차는 !!훈련 데이터로만!!)",
         "· 출력에 활성화 없음 = 어떤 값이든 예측 가능",
         "· ==mse==(평균 제곱 오차) 손실, ==mae==(평균 절대 오차) 지표",
-        "· 데이터가 적으면 → 작은 모델 + ==K-겹 검증==",
+        "· 데이터가 적으면 → 작은 모델 + ==K-겹 검증== (책은 K = 4)",
       ],
       end: "*결국, 회귀 = Dense(1) + mse, 데이터 적으면 K-겹",
     },
@@ -114,7 +116,7 @@ BOOK.add({
           ["이진 분류", "Dense(1, sigmoid)", "binary_crossentropy"],
           ["다중 분류 (원-핫)", "Dense(N, softmax)", "categorical_crossentropy"],
           ["다중 분류 (정수)", "Dense(N, softmax)", "sparse_categorical_crossentropy"],
-          ["스칼라 회귀", "Dense(1)", "mse  (지표 mae)"],
+          ["스칼라 회귀", "Dense(1)", "mean_squared_error"],
         ];
         const out = [];
         rows.forEach((r, i) => r.forEach((c, j) => out.push(k.box(cols[j][0], 14 + i * 42, cols[j][1], 40, c, {

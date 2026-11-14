@@ -1,47 +1,73 @@
 BOOK.add({
   no: 3,
-  title: "케라스와 텐서플로 소개",
-  short: "케라스 · 텐서플로",
-  one: "케라스로 쓰고, 계산은 텐서플로가 한다",
+  title: "텐서플로, 파이토치, JAX 그리고 케라스에 대한 소개",
+  short: "TF · 파이토치 · JAX · 케라스",
+  one: "케라스(조립 키트)로 쓰고, 백엔드(원자재)는 골라 쓴다",
   cards: [
     {
-      id: "3.1-stack", sec: "3.1", title: "케라스 · 텐서플로 · 하드웨어",
-      fig: { h: 222, alt: "케라스가 텐서플로 위에, 텐서플로가 CPU GPU TPU 위에 있는 층 구조", f: k => [
-        k.box(120, 14, 520, 56, "케라스", { fill: "yellow", bold: true, sub: "층 · 모델 · 옵티마이저 · 손실 · 지표 · 훈련 루프" }),
-        k.box(120, 78, 520, 56, "텐서플로", { fill: "mint", bold: true, sub: "텐서 연산 · 변수 · 자동 미분(GradientTape) · 배포" }),
-        k.box(120, 142, 160, 40, "CPU"), k.box(300, 142, 160, 40, "GPU"), k.box(480, 142, 160, 40, "TPU"),
-        k.red(652, 42, "내가 쓰는\nAPI", { size: 17 }), k.red(652, 106, "계산 엔진", { size: 17 }), k.red(652, 162, "하드웨어", { size: 17 }),
-        k.red(120, 206, "케라스 = 텐서플로 위에서 딥러닝을 쉽게 쓰게 해주는 API", { size: 17 }),
+      id: "3.2-frameworks", sec: "3.2", title: "프레임워크 사이의 관계",
+      fig: { h: 232, alt: "고수준 케라스가 저수준 백엔드 텐서플로, 파이토치, JAX 위에서 돈다", f: k => [
+        k.box(120, 14, 520, 60, "케라스 (고수준)", { fill: "yellow", bold: true, sub: "층 · 손실 · 옵티마이저 · 지표 · 훈련 루프" }),
+        k.arrow(380, 76, 380, 100, { label: "KERAS_BACKEND로 선택", lx: 90, ly: 0, lc: "red" }),
+        k.box(120, 104, 160, 60, "텐서플로", { fill: "mint", sub: "저수준" }),
+        k.box(300, 104, 160, 60, "파이토치", { fill: "mint", sub: "저수준" }),
+        k.box(480, 104, 160, 60, "JAX", { fill: "mint", sub: "저수준" }),
+        k.ctext(380, 186, "공통: 텐서 · 변수 · 텐서 연산 · 역전파(자동 미분)", { size: 13 }),
+        k.red(652, 40, "조립식\n건축 키트", { size: 17 }), k.red(652, 132, "원자재", { size: 17 }),
+        k.red(120, 218, "+ 넘파이에서도 돌지만 그레이디언트가 없어 훈련은 X", { size: 16 }),
       ] },
       pts: [
-        "· ==텐서플로==: 구글의 파이썬 수치 계산 프레임워크 (넘파이 + 자동 미분 + GPU/TPU + 분산 + 배포)",
-        "· ==케라스==: 텐서플로 위의 딥러닝 API. 쓰기 쉬운 게 목표",
-        "· 실습 환경: ==주피터 노트북==, 또는 무료 GPU가 있는 ==코랩==",
+        "· ==저수준== (텐서플로 · 파이토치 · JAX): 텐서, 변수, 텐서 연산, 역전파",
+        "· ==고수준== (케라스): 층, 손실 함수, 옵티마이저, 지표, 훈련 루프",
+        "· 케라스는 혼자 못 돎 → ==백엔드 엔진== 필요. 셋 중 아무거나 고르면 됨",
+        "· `os.environ[\"KERAS_BACKEND\"] = \"jax\"` 처럼 케라스를 import 하기 전에 지정",
       ],
-      end: "*결국, 나는 케라스로 쓰고 계산은 텐서플로가 한다",
+      end: "*결국, 케라스 코드 하나로 세 백엔드 어디서든 돌린다",
     },
     {
-      id: "3.5-tf-objects", sec: "3.5", title: "텐서플로 핵심 객체 4개",
-      fig: { h: 236, alt: "상수 텐서, 변수, 텐서 연산, GradientTape 네 가지와 예시 코드", f: k => [
-        k.box(20, 14, 350, 100, ""), k.text(36, 36, "① 텐서 (상수)", { bold: true }), k.red(250, 36, "할당 불가!", { size: 16 }),
-        k.text(36, 78, "tf.ones((2, 1))\ntf.random.normal((3, 1))", { mono: true, size: 12 }),
-        k.box(390, 14, 350, 100, "", { fill: "yellow" }), k.text(406, 36, "② 변수 tf.Variable", { bold: true }), k.red(628, 36, "가중치는 여기", { size: 16 }),
-        k.text(406, 78, "v = tf.Variable(initial_value=...)\nv.assign(...) / v.assign_add(...)", { mono: true, size: 12 }),
-        k.box(20, 124, 350, 100, ""), k.text(36, 146, "③ 텐서 연산", { bold: true }),
-        k.text(36, 188, "tf.square(x), tf.sqrt(x)\ntf.matmul(a, b)   # 점곱", { mono: true, size: 12 }),
-        k.box(390, 124, 350, 100, "", { fill: "mint" }), k.text(406, 146, "④ GradientTape", { bold: true }),
-        k.text(406, 190, "with tf.GradientTape() as tape:\n    y = 2 * x + 3\ngrad = tape.gradient(y, x)", { mono: true, size: 12 }),
+      id: "3.3-compare", sec: "3.3~3.5", title: "텐서플로 vs 파이토치 vs JAX",
+      fig: { h: 248, alt: "세 저수준 프레임워크의 장점과 단점 비교표", f: k => {
+        const rows = [
+          ["", "장점", "단점"],
+          ["텐서플로", "그래프 모드 · XLA로 빠름\n배포 생태계 최고 (모바일 · 웹)", "API가 방대 · 넘파이와 불일치\n허깅 페이스 지원 약함"],
+          ["파이토치", "즉시 실행 → 디버깅 쉬움\n허깅 페이스 일급 지원", "가장 느림\nAPI 불일치 (axis vs dim)"],
+          ["JAX", "대부분 가장 빠름 · TPU 최적\n넘파이와 같은 API", "디버깅 어려움\n저수준 루프가 장황"],
+        ];
+        const cols = [[20, 120], [140, 300], [440, 300]], hs = [34, 64, 64, 64];
+        const out = []; let y = 14;
+        rows.forEach((r, i) => { r.forEach((c, j) => out.push(k.box(cols[j][0], y, cols[j][1], hs[i], c, { r: 0, size: i === 0 || j === 0 ? 14 : 12, bold: i === 0 || j === 0, fill: i === 0 ? "yellow" : j === 0 ? (i === 2 ? "orange" : "mint") : "paper" }))); y += hs[i]; });
+        return out;
+      } },
+      pts: [
+        "· 텐서플로: 문자열 텐서 · ==래그드 텐서==까지 있는 가장 완전한 기능",
+        "· 파이토치: 사용하고 싶은 거의 모든 모델을 파이토치 버전으로 구할 수 있음 → 요즘 선택의 큰 이유",
+        "  · `torch.compile()` 로 빨라질 수 있지만 아직 함정이 많음",
+        "· JAX: ==함수형 · 상태 비저장== 철학 → 빠르게 컴파일, 큰 모델 · 많은 장치로 확장 쉬움",
+      ],
+      end: "*결국, 정답은 없고 장단점이 다르다. 케라스면 갈아타기 쉽다",
+    },
+    {
+      id: "3.3-autodiff", sec: "3.3~3.5", title: "그레이디언트 구하는 3가지 방법",
+      fig: { h: 230, alt: "텐서플로 GradientTape, 파이토치 backward, JAX grad로 같은 그레이디언트를 구하는 코드", f: k => [
+        k.box(20, 14, 230, 30, "텐서플로", { fill: "mint", bold: true }),
+        k.box(265, 14, 230, 30, "파이토치", { fill: "orange", bold: true }),
+        k.box(510, 14, 230, 30, "JAX", { fill: "yellow", bold: true }),
+        k.box(20, 48, 230, 110, "", { fill: "blue" }), k.text(30, 102, "with tf.GradientTape()\n        as tape:\n    loss = f(W)\ng = tape.gradient(\n        loss, W)", { mono: true, size: 12 }),
+        k.box(265, 48, 230, 110, "", { fill: "blue" }), k.text(275, 102, "W = torch.tensor(...,\n    requires_grad=True)\nloss = f(W)\nloss.backward()\ng = W.grad", { mono: true, size: 12 }),
+        k.box(510, 48, 230, 110, "", { fill: "blue" }), k.text(520, 102, "grad_fn = jax.grad(f)\ng = grad_fn(W)", { mono: true, size: 12 }),
+        k.red(30, 184, "테이프로 기록", { size: 17 }), k.red(275, 184, "텐서가 거꾸로 추적", { size: 17 }), k.red(520, 184, "함수를 미분 함수로", { size: 17 }),
+        k.red(20, 220, "셋 다 같은 일: 손실에 대한 가중치의 그레이디언트", { size: 17 }),
       ] },
       pts: [
-        "· 텐서플로 텐서는 ==값 할당 불가== (넘파이 배열과 다름) → 학습할 가중치는 ==tf.Variable==",
-        "· 텐서 연산 이름은 넘파이와 거의 같음",
-        "· ==GradientTape==: 블록 안 연산을 기록 → 그레이디언트 자동 계산",
-        "· 3.5.4: 이 4개만으로 선형 분류기를 밑바닥부터 구현할 수 있음",
+        "· 텐서플로: `GradientTape` 블록 안 연산을 기록 → `tape.gradient()`",
+        "· 파이토치: `requires_grad=True` 텐서 → `loss.backward()` → 결과는 `.grad` 에 저장",
+        "· JAX: 상태가 없음 → 손실 '함수'를 `jax.grad` 에 넣어 그레이디언트 '함수'를 얻음 (`jax.value_and_grad` 는 손실도 같이)",
+        "· 3장에서 셋 다 같은 선형 분류기를 밑바닥부터 구현해 봄",
       ],
-      end: "*결국, 텐서 · 변수 · 연산 · 테이프 = 텐서플로의 전부",
+      end: "*결국, 내 필기의 torch 코드는 이 중 가운데 길",
     },
     {
-      id: "3.6-layer-model", sec: "3.6.1", title: "층과 모델",
+      id: "3.6-layer-model", sec: "3.6.2", title: "층과 모델",
       fig: { h: 232, alt: "층은 가중치와 call 연산을 담은 상자이고, 입력을 받아 출력을 낸다", f: k => [
         k.box(200, 20, 360, 150, ""), k.text(216, 42, "Layer (층)", { bold: true }),
         k.box(220, 60, 150, 90, "가중치", { sub: "W, b (상태)", fill: "yellow" }),
@@ -53,14 +79,14 @@ BOOK.add({
       ] },
       pts: [
         "· ==층==: 상태(가중치) + 연산을 담은 객체. 딥러닝의 기본 단위",
-        "· 데이터마다 맞는 층: 벡터 → `Dense` / 시퀀스 → `LSTM`, `Conv1D` / 이미지 → `Conv2D`",
+        "· 데이터마다 맞는 층: 벡터 → `Dense` / 시퀀스 → `LSTM`, 트랜스포머 / 이미지 → `Conv2D`",
         "· ==모델== = 층의 그래프. 가장 흔한 형태는 층을 쌓은 `Sequential`",
         "· 모델 구조 = ==가설 공간== → 구조를 고르는 것 = 가정을 고르는 것",
       ],
       end: "*결국, 층은 레고 블록, 모델은 블록 조립품",
     },
     {
-      id: "3.6-compile-fit", sec: "3.6.3", title: "compile → fit → evaluate → predict",
+      id: "3.6-compile-fit", sec: "3.6.4", title: "compile → fit → evaluate → predict",
       fig: { h: 222, alt: "케라스 모델 사용 순서: compile, fit, evaluate, predict", f: k => [
         k.flow(30, [
           { t: "compile()", sub: "optimizer · loss\n· metrics", mono: true },
@@ -79,7 +105,7 @@ BOOK.add({
         "· ==배치 크기==: 그레이디언트 한 번 계산에 쓰는 샘플 수",
         "· ==검증 데이터==: 훈련에 안 쓰는 데이터 → 일반화 확인용",
         "· ==손실 함수 고르기==가 제일 중요: 문제와 안 맞으면 엉뚱한 걸 최적화 (4장 끝 표 참고)",
-        "· `history = model.fit(...)` → `history.history` 에 에포크별 손실·지표가 쌓임",
+        "· `history = model.fit(...)` → `history.history` 에 에포크별 손실 · 지표가 쌓임",
       ],
       end: "*결국, compile로 설정 → fit으로 훈련 → predict로 사용",
     },
