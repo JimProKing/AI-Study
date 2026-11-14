@@ -70,6 +70,7 @@ BOOK.add({
     },
     {
       id: "4.2-reuters", sec: "4.2", title: "다중 분류: 뉴스 토픽 (로이터)",
+      mine: { img: "my-notes/reuters.jpg", date: "2026-11-14" },
       fig: { h: 216, alt: "Dense 64 두 개와 Dense 46 softmax로 46개 토픽 확률을 내고, 너무 작은 중간층은 정보 병목이 된다", f: k => [
         k.flow(30, [
           { t: "뉴스", shape: "oval", sub: "(10000,)" },
