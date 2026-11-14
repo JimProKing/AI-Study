@@ -6,6 +6,7 @@ BOOK.add({
   cards: [
     {
       id: "3.2-frameworks", sec: "3.2", title: "프레임워크 사이의 관계",
+      mine: { img: "my-notes/keras-backend.png", date: "2026-11-14" },
       fig: { h: 232, alt: "고수준 케라스가 저수준 백엔드 텐서플로, 파이토치, JAX 위에서 돈다", f: k => [
         k.box(120, 14, 520, 60, "케라스 (고수준)", { fill: "yellow", bold: true, sub: "층 · 손실 · 옵티마이저 · 지표 · 훈련 루프" }),
         k.arrow(380, 76, 380, 100, { label: "KERAS_BACKEND로 선택", lx: 90, ly: 0, lc: "red" }),
@@ -26,6 +27,7 @@ BOOK.add({
     },
     {
       id: "3.3-compare", sec: "3.3~3.5", title: "텐서플로 vs 파이토치 vs JAX",
+      mine: { img: "my-notes/frameworks-compare.png", date: "2026-11-14" },
       fig: { h: 248, alt: "세 저수준 프레임워크의 장점과 단점 비교표", f: k => {
         const rows = [
           ["", "장점", "단점"],
@@ -48,6 +50,7 @@ BOOK.add({
     },
     {
       id: "3.3-autodiff", sec: "3.3~3.5", title: "그레이디언트 구하는 3가지 방법",
+      mine: { img: "my-notes/autodiff.png", date: "2026-11-14" },
       fig: { h: 230, alt: "텐서플로 GradientTape, 파이토치 backward, JAX grad로 같은 그레이디언트를 구하는 코드", f: k => [
         k.box(20, 14, 230, 30, "텐서플로", { fill: "mint", bold: true }),
         k.box(265, 14, 230, 30, "파이토치", { fill: "orange", bold: true }),
@@ -61,13 +64,15 @@ BOOK.add({
       pts: [
         "· 텐서플로: `GradientTape` 블록 안 연산을 기록 → `tape.gradient()`",
         "· 파이토치: `requires_grad=True` 텐서 → `loss.backward()` → 결과는 `.grad` 에 저장",
+        "  · !!주의!! `.grad` 는 ==누적==됨 → 스텝마다 `W.grad = None` 으로 재설정",
         "· JAX: 상태가 없음 → 손실 '함수'를 `jax.grad` 에 넣어 그레이디언트 '함수'를 얻음 (`jax.value_and_grad` 는 손실도 같이)",
         "· 3장에서 셋 다 같은 선형 분류기를 밑바닥부터 구현해 봄",
       ],
-      end: "*결국, 내 필기의 torch 코드는 이 중 가운데 길",
+      end: "*결국, 기록(TF) · 역추적(torch) · 함수 변환(JAX). 길만 다르고 답은 같다",
     },
     {
       id: "3.6-layer-model", sec: "3.6.2", title: "층과 모델",
+      mine: { img: "my-notes/layer-model.png", date: "2026-11-14" },
       fig: { h: 232, alt: "층은 가중치와 call 연산을 담은 상자이고, 입력을 받아 출력을 낸다", f: k => [
         k.box(200, 20, 360, 150, ""), k.text(216, 42, "Layer (층)", { bold: true }),
         k.box(220, 60, 150, 90, "가중치", { sub: "W, b (상태)", fill: "yellow" }),
@@ -87,6 +92,7 @@ BOOK.add({
     },
     {
       id: "3.6-compile-fit", sec: "3.6.4", title: "compile → fit → evaluate → predict",
+      mine: { img: "my-notes/compile-fit.png", date: "2026-11-14" },
       fig: { h: 222, alt: "케라스 모델 사용 순서: compile, fit, evaluate, predict", f: k => [
         k.flow(30, [
           { t: "compile()", sub: "optimizer · loss\n· metrics", mono: true },
