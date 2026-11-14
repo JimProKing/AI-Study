@@ -1,0 +1,87 @@
+BOOK.add({
+  no: 3,
+  title: "케라스와 텐서플로 소개",
+  short: "케라스 · 텐서플로",
+  one: "케라스로 쓰고, 계산은 텐서플로가 한다",
+  cards: [
+    {
+      id: "3.1-stack", sec: "3.1", title: "케라스 · 텐서플로 · 하드웨어",
+      fig: { h: 222, alt: "케라스가 텐서플로 위에, 텐서플로가 CPU GPU TPU 위에 있는 층 구조", f: k => [
+        k.box(120, 14, 520, 56, "케라스", { fill: "yellow", bold: true, sub: "층 · 모델 · 옵티마이저 · 손실 · 지표 · 훈련 루프" }),
+        k.box(120, 78, 520, 56, "텐서플로", { fill: "mint", bold: true, sub: "텐서 연산 · 변수 · 자동 미분(GradientTape) · 배포" }),
+        k.box(120, 142, 160, 40, "CPU"), k.box(300, 142, 160, 40, "GPU"), k.box(480, 142, 160, 40, "TPU"),
+        k.red(652, 42, "내가 쓰는\nAPI", { size: 17 }), k.red(652, 106, "계산 엔진", { size: 17 }), k.red(652, 162, "하드웨어", { size: 17 }),
+        k.red(120, 206, "케라스 = 텐서플로 위에서 딥러닝을 쉽게 쓰게 해주는 API", { size: 17 }),
+      ] },
+      pts: [
+        "· ==텐서플로==: 구글의 파이썬 수치 계산 프레임워크 (넘파이 + 자동 미분 + GPU/TPU + 분산 + 배포)",
+        "· ==케라스==: 텐서플로 위의 딥러닝 API. 쓰기 쉬운 게 목표",
+        "· 실습 환경: ==주피터 노트북==, 또는 무료 GPU가 있는 ==코랩==",
+      ],
+      end: "*결국, 나는 케라스로 쓰고 계산은 텐서플로가 한다",
+    },
+    {
+      id: "3.5-tf-objects", sec: "3.5", title: "텐서플로 핵심 객체 4개",
+      fig: { h: 236, alt: "상수 텐서, 변수, 텐서 연산, GradientTape 네 가지와 예시 코드", f: k => [
+        k.box(20, 14, 350, 100, ""), k.text(36, 36, "① 텐서 (상수)", { bold: true }), k.red(250, 36, "할당 불가!", { size: 16 }),
+        k.text(36, 78, "tf.ones((2, 1))\ntf.random.normal((3, 1))", { mono: true, size: 12 }),
+        k.box(390, 14, 350, 100, "", { fill: "yellow" }), k.text(406, 36, "② 변수 tf.Variable", { bold: true }), k.red(628, 36, "가중치는 여기", { size: 16 }),
+        k.text(406, 78, "v = tf.Variable(initial_value=...)\nv.assign(...) / v.assign_add(...)", { mono: true, size: 12 }),
+        k.box(20, 124, 350, 100, ""), k.text(36, 146, "③ 텐서 연산", { bold: true }),
+        k.text(36, 188, "tf.square(x), tf.sqrt(x)\ntf.matmul(a, b)   # 점곱", { mono: true, size: 12 }),
+        k.box(390, 124, 350, 100, "", { fill: "mint" }), k.text(406, 146, "④ GradientTape", { bold: true }),
+        k.text(406, 190, "with tf.GradientTape() as tape:\n    y = 2 * x + 3\ngrad = tape.gradient(y, x)", { mono: true, size: 12 }),
+      ] },
+      pts: [
+        "· 텐서플로 텐서는 ==값 할당 불가== (넘파이 배열과 다름) → 학습할 가중치는 ==tf.Variable==",
+        "· 텐서 연산 이름은 넘파이와 거의 같음",
+        "· ==GradientTape==: 블록 안 연산을 기록 → 그레이디언트 자동 계산",
+        "· 3.5.4: 이 4개만으로 선형 분류기를 밑바닥부터 구현할 수 있음",
+      ],
+      end: "*결국, 텐서 · 변수 · 연산 · 테이프 = 텐서플로의 전부",
+    },
+    {
+      id: "3.6-layer-model", sec: "3.6.1", title: "층과 모델",
+      fig: { h: 232, alt: "층은 가중치와 call 연산을 담은 상자이고, 입력을 받아 출력을 낸다", f: k => [
+        k.box(200, 20, 360, 150, ""), k.text(216, 42, "Layer (층)", { bold: true }),
+        k.box(220, 60, 150, 90, "가중치", { sub: "W, b (상태)", fill: "yellow" }),
+        k.box(390, 60, 150, 90, "call()", { sub: "relu(x·W + b)", fill: "mint", mono: true }),
+        k.arrow(372, 105, 388, 105),
+        k.oval(90, 105, 64, 26, "입력"), k.arrow(156, 105, 218, 105),
+        k.arrow(542, 105, 604, 105), k.oval(670, 105, 64, 26, "출력"),
+        k.red(216, 202, "build() = 첫 입력 크기를 보고\n가중치를 만듦 (자동 크기 추론)", { size: 17 }),
+      ] },
+      pts: [
+        "· ==층==: 상태(가중치) + 연산을 담은 객체. 딥러닝의 기본 단위",
+        "· 데이터마다 맞는 층: 벡터 → `Dense` / 시퀀스 → `LSTM`, `Conv1D` / 이미지 → `Conv2D`",
+        "· ==모델== = 층의 그래프. 가장 흔한 형태는 층을 쌓은 `Sequential`",
+        "· 모델 구조 = ==가설 공간== → 구조를 고르는 것 = 가정을 고르는 것",
+      ],
+      end: "*결국, 층은 레고 블록, 모델은 블록 조립품",
+    },
+    {
+      id: "3.6-compile-fit", sec: "3.6.3", title: "compile → fit → evaluate → predict",
+      fig: { h: 222, alt: "케라스 모델 사용 순서: compile, fit, evaluate, predict", f: k => [
+        k.flow(30, [
+          { t: "compile()", sub: "optimizer · loss\n· metrics", mono: true },
+          { t: "fit()", sub: "x, y, epochs,\nbatch_size", mono: true, fill: "yellow" },
+          { t: "evaluate()", sub: "테스트 성능", mono: true },
+          { t: "predict()", sub: "새 입력 → 예측", mono: true, fill: "mint" },
+        ], { gap: 36, h: 72 }),
+        k.red(20, 140, "학습 과정 설정", { size: 17 }),
+        k.red(209, 146, "validation_data로\n검증 손실도 같이 봄", { size: 17 }),
+        k.red(398, 140, "마지막에 한 번", { size: 17 }),
+        k.red(587, 140, "배치로 나눠 예측", { size: 17 }),
+        k.box(20, 180, 720, 34, "model.fit(x, y, epochs=5, batch_size=128, validation_data=(x_val, y_val))", { mono: true, size: 12, fill: "blue" }),
+      ] },
+      pts: [
+        "· ==에포크==: 훈련 데이터 전체를 한 바퀴",
+        "· ==배치 크기==: 그레이디언트 한 번 계산에 쓰는 샘플 수",
+        "· ==검증 데이터==: 훈련에 안 쓰는 데이터 → 일반화 확인용",
+        "· ==손실 함수 고르기==가 제일 중요: 문제와 안 맞으면 엉뚱한 걸 최적화 (4장 끝 표 참고)",
+        "· `history = model.fit(...)` → `history.history` 에 에포크별 손실·지표가 쌓임",
+      ],
+      end: "*결국, compile로 설정 → fit으로 훈련 → predict로 사용",
+    },
+  ],
+});

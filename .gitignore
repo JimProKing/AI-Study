@@ -1,0 +1,31 @@
+# 책 파일 (저작권 — 절대 업로드 금지)
+*.pdf
+*.epub
+
+# Python / 가상환경
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 데이터·모델 (용량 큼)
+data/
+!visual-notes/data/
+datasets/
+*.h5
+*.keras
+*.pt
+*.ckpt
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Claude Code 개인 설정
+.claude/settings.local.json
+CLAUDE.local.md

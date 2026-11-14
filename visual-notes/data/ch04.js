@@ -1,0 +1,133 @@
+BOOK.add({
+  no: 4,
+  title: "신경망 시작하기: 분류와 회귀",
+  short: "분류와 회귀",
+  one: "문제 유형에 맞는 마지막 층 + 손실 함수 고르기",
+  cards: [
+    {
+      id: "4.1-imdb", sec: "4.1", title: "이진 분류: 영화 리뷰 (IMDB)",
+      fig: { h: 222, alt: "리뷰를 멀티-핫으로 바꿔 Dense 16 두 개와 Dense 1 sigmoid로 긍정 확률을 낸다", f: k => [
+        k.flow(30, [
+          { t: "리뷰", shape: "oval", sub: "단어 인덱스" },
+          { t: "멀티-핫", sub: "(10000,)", submono: true },
+          { t: "Dense 16", sub: "relu" },
+          { t: "Dense 16", sub: "relu" },
+          { t: "Dense 1", sub: "sigmoid", fill: "mint" },
+          { t: "긍정 확률", shape: "oval", sub: "0 ~ 1", fill: "yellow" },
+        ], { gap: 28, h: 64 }),
+        k.arrow(193, 96, 193, 124),
+        k.cells(120, 128, [0, 1, 0, 0, 1, 1, 0, "…"], { cw: 26, hi: [1, 4, 5] }),
+        k.text(120, 174, "리뷰에 있는 단어 자리만 1", { size: 12, color: "muted" }),
+        k.red(380, 150, "손실 = binary_crossentropy\n옵티마이저 = rmsprop", { size: 17 }),
+      ] },
+      pts: [
+        "· ==IMDB==: 영화 리뷰 5만 개 (훈련 2.5만 / 테스트 2.5만), 긍정 vs 부정",
+        "· 자주 나오는 단어 1만 개만 사용",
+        "· 정수 리스트는 바로 못 넣음 → ==멀티-핫 인코딩==으로 텐서로 바꿈",
+        "· 출력 1개 + ==sigmoid== → 0~1 확률",
+        "· 4번째 에포크쯤부터 과대적합 → 4 에포크로 다시 훈련하면 정확도 약 88%",
+      ],
+      end: "*결국, 이진 분류 = Dense(1, sigmoid) + binary_crossentropy",
+    },
+    {
+      id: "4.1-overfit-curve", sec: "4.1.4", title: "훈련 손실 vs 검증 손실",
+      fig: { h: 236, alt: "훈련 손실은 계속 내려가지만 검증 손실은 4 에포크쯤 바닥을 찍고 다시 오른다", f: k => [
+        k.plot(60, 24, 440, 180, { xl: "에포크", yl: "손실",
+          curves: [
+            { f: t => 0.62 * Math.exp(-3.2 * t) + 0.04, color: "teal", thick: true, label: "훈련 손실", lt: 0.6, ly: -14, lc: "teal" },
+            { f: t => 0.3 + 0.75 * (t - 0.22) ** 2, color: "red", thick: true, label: "검증 손실", lt: 0.75, ly: -14, lc: "red" },
+          ],
+          vlines: [{ t: 0.22, label: "여기서 멈춤" }] }),
+        k.red(520, 50, "훈련 손실은 계속 ↓", { size: 17 }),
+        k.red(520, 98, "검증 손실은 4 에포크쯤\n바닥 찍고 ↑", { size: 17 }),
+        k.red(520, 160, "= 과대적합 시작!", { size: 19 }),
+      ] },
+      pts: [
+        "· `history.history` 의 `loss`, `val_loss` 를 그래프로 그려 봄",
+        "· 훈련 데이터 성능 ≠ 처음 보는 데이터 성능",
+        "· 과대적합 대응: 지금은 에포크 줄이기 → 5장에서 규제·드롭아웃",
+      ],
+      end: "*결국, 검증 손실이 다시 오르는 지점 = 훈련을 멈출 때",
+    },
+    {
+      id: "4.2-reuters", sec: "4.2", title: "다중 분류: 뉴스 토픽 (로이터)",
+      fig: { h: 216, alt: "Dense 64 두 개와 Dense 46 softmax로 46개 토픽 확률을 내고, 너무 작은 중간층은 정보 병목이 된다", f: k => [
+        k.flow(30, [
+          { t: "뉴스", shape: "oval", sub: "(10000,)" },
+          { t: "Dense 64", sub: "relu" },
+          { t: "Dense 64", sub: "relu" },
+          { t: "Dense 46", sub: "softmax", fill: "mint" },
+        ], { x1: 520, gap: 36, h: 64 }),
+        k.arrow(524, 62, 556, 62),
+        k.bars(562, 20, 178, 74, [.02, .05, .03, .55, .04, .08, .02, .06, .03, .04, .02, .03, .02, .01], { hi: [3], gap: 3 }),
+        k.ctext(651, 112, "46개 확률, 합 = 1", { size: 12, color: "muted" }),
+        k.box(20, 150, 110, 44, "Dense 64"), k.arrow(132, 172, 166, 172),
+        k.box(170, 158, 50, 28, "4", { fill: "red", bold: true }), k.arrow(222, 172, 256, 172),
+        k.box(260, 150, 110, 44, "Dense 46"),
+        k.red(390, 164, "중간층이 46보다 훨씬 작으면\n정보 병목 → 정확도 크게 ↓", { size: 17 }),
+      ] },
+      pts: [
+        "· ==로이터==: 짧은 뉴스 기사 → 토픽 46개 (단일 레이블 다중 분류)",
+        "· 출력 `Dense(46)` + ==softmax== → 46개 확률 분포",
+        "· 레이블 인코딩 2가지",
+        "  · ① 원-핫 → `categorical_crossentropy`",
+        "  · ② 정수 그대로 → `sparse_categorical_crossentropy`",
+        "· 중간층은 클래스 수보다 충분히 크게 (16차원으로 46개 구분은 빠듯)",
+      ],
+      end: "*결국, 다중 분류 = Dense(N, softmax) + categorical_crossentropy",
+    },
+    {
+      id: "4.3-regression", sec: "4.3", title: "회귀: 주택 가격 + K-겹 검증",
+      fig: { h: 232, alt: "특성별 정규화, 활성화 없는 Dense 1 출력, 그리고 K=3 겹 검증 그림", f: k => {
+        const out = [
+          k.text(20, 22, "① 특성별 정규화", { bold: true, size: 14 }),
+          k.box(20, 40, 210, 60, "(x − 평균) / 표준편차", { sub: "훈련 데이터로 계산!", subc: "red" }),
+          k.text(20, 130, "② 출력", { bold: true, size: 14 }),
+          k.box(20, 146, 210, 44, "Dense(1)", { sub: "활성화 없음", fill: "mint", mono: true }),
+          k.red(20, 214, "손실 mse · 지표 mae", { size: 17 }),
+          k.text(270, 22, "③ K-겹 검증 (K = 3)", { bold: true, size: 14 }),
+        ];
+        for (let i = 0; i < 3; i++) {
+          const y = 44 + i * 44;
+          for (let j = 0; j < 3; j++) out.push(k.box(270 + j * 104, y, 100, 34, i === j ? "검증" : "훈련", { fill: i === j ? "yellow" : "paper", size: 13 }));
+          out.push(k.text(590, y + 17, "→ 점수 " + (i + 1), { size: 13 }));
+        }
+        out.push(k.red(590, 184, "평균 = 최종 점수", { size: 17 }));
+        out.push(k.red(270, 214, "데이터가 적을 때 (훈련 404개) 믿을 만한 평가", { size: 16 }));
+        return out;
+      } },
+      pts: [
+        "· ==보스턴 주택 가격==: 훈련 404개 / 테스트 102개, 특성 13개, 타깃 = 중간 가격(천 달러)",
+        "· 특성마다 범위가 다름 → ==특성별 정규화== (평균·표준편차는 !!훈련 데이터로만!!)",
+        "· 출력에 활성화 없음 = 어떤 값이든 예측 가능",
+        "· ==mse==(평균 제곱 오차) 손실, ==mae==(평균 절대 오차) 지표",
+        "· 데이터가 적으면 → 작은 모델 + ==K-겹 검증==",
+      ],
+      end: "*결국, 회귀 = Dense(1) + mse, 데이터 적으면 K-겹",
+    },
+    {
+      id: "4.4-cheatsheet", sec: "4.4", title: "4장 정리표",
+      fig: { h: 232, alt: "문제 유형별 마지막 층과 손실 함수 표", f: k => {
+        const cols = [[20, 200], [220, 230], [450, 290]];
+        const rows = [
+          ["문제 유형", "마지막 층", "손실 함수"],
+          ["이진 분류", "Dense(1, sigmoid)", "binary_crossentropy"],
+          ["다중 분류 (원-핫)", "Dense(N, softmax)", "categorical_crossentropy"],
+          ["다중 분류 (정수)", "Dense(N, softmax)", "sparse_categorical_crossentropy"],
+          ["스칼라 회귀", "Dense(1)", "mse  (지표 mae)"],
+        ];
+        const out = [];
+        rows.forEach((r, i) => r.forEach((c, j) => out.push(k.box(cols[j][0], 14 + i * 42, cols[j][1], 40, c, {
+          r: 0, fill: i === 0 ? "yellow" : j === 0 ? "mint" : "paper", bold: i === 0, mono: i > 0 && j > 0, size: i > 0 && j > 0 ? 13 : 14 }))));
+        return out;
+      } },
+      pts: [
+        "· 벡터 데이터 3대 문제: 이진 분류 · 다중 분류 · 스칼라 회귀",
+        "· 범위가 다른 특성 → 각각 스케일 조정",
+        "· 데이터가 적으면: 중간층 1~2개, K-겹 검증",
+        "· 클래스가 많으면: 중간층을 너무 작게 X (병목)",
+      ],
+      end: "*결국, 이 표 하나만 외워도 4장 끝!",
+    },
+  ],
+});
