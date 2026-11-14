@@ -142,6 +142,35 @@ code { font-family: var(--f-mono); font-size: .86em; background: var(--blue-a); 
   .term dd { border-top: 0; padding-top: 2px; }
 }
 
+/* ---------- 실습 ---------- */
+.lab-link { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 10px 14px; background: var(--paper); border: 2px solid var(--mint); border-radius: 8px; text-decoration: none; box-shadow: var(--shadow); }
+.lab-link b { font-family: var(--f-hand); font-size: 22px; line-height: 1.1; background: linear-gradient(transparent 50%, var(--mint-a) 50%); }
+.lab-link span { font-size: 13px; color: var(--teal); }
+.lab-link:hover { border-color: var(--teal); }
+.lab-back { font-size: 13px; color: var(--teal); text-decoration: none; }
+.lab { background: var(--paper); border-radius: 4px 10px 10px 4px; box-shadow: var(--shadow); padding: 18px 24px 22px; display: flex; flex-direction: column; gap: 14px; }
+.lab-md h3, .lab-md h4, .lab-md h5 { font-family: var(--f-hand); font-weight: 700; line-height: 1.2; margin: 18px 0 6px; }
+.lab-md h3 { font-size: 30px; } .lab-md h4 { font-size: 26px; margin-top: 26px; } .lab-md h5 { font-size: 21px; }
+.lab-md h4 { background: linear-gradient(transparent 45%, var(--orange-a) 45%, var(--orange-a) 92%, transparent 92%); display: inline-block; padding: 0 .1em; }
+.lab-md p, .lab-md ul { margin: 6px 0; max-width: 72ch; }
+.lab-md ul { padding-left: 22px; }
+.lab-md p.pen { font-size: 22px; }
+.lab-tw { overflow-x: auto; margin: 8px 0; }
+.lab-md table { border-collapse: collapse; font-size: 14px; }
+.lab-md th, .lab-md td { border: 1px solid var(--rule); padding: 5px 10px; text-align: left; vertical-align: top; }
+.lab-md th { background: var(--hl-a); }
+.lab-cell { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.lab-in, .lab-out { position: relative; }
+.lab-in { background: var(--blue-a); }
+.lab-out { background: var(--paper); border-top: 1px dashed var(--faint); }
+.lab-tag { position: absolute; top: 6px; right: 10px; font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+.lab-out .lab-tag { color: var(--red); font-family: var(--f-hand); font-size: 16px; font-weight: 700; top: 4px; }
+.lab pre { margin: 0; padding: 12px 14px; overflow-x: auto; font-family: var(--f-mono); font-size: 12.5px; line-height: 1.55; }
+.lab pre code { background: none; padding: 0; font-size: inherit; word-break: normal; }
+.lab .cm { color: var(--teal); }
+.lab-out img { display: block; max-width: min(100%, 640px); margin: 4px 14px 12px; border-radius: 4px; background: #fff; }
+@media (max-width: 520px) { .lab { padding: 14px 12px 16px; } .lab pre { font-size: 11.5px; } }
+
 /* ---------- 처음 화면 ---------- */
 .hero { padding: 12px 0 8px; }
 .eyebrow { margin: 0; font-size: 13px; letter-spacing: .04em; color: var(--muted); }
@@ -239,3 +268,4 @@ code { font-family: var(--f-mono); font-size: .86em; background: var(--blue-a); 
 <script src="data/ch18.js"></script>
 <script src="data/ch19.js"></script>
 <script src="data/ch20.js"></script>
+<script src="data/lab03.js"></script>

@@ -8,7 +8,7 @@
  *   mine   : { img, date }  → 내가 공책에 쓴 필기 사진
  */
 (function () {
-  const BOOK = (window.BOOK = { chapters: [], add(ch) { this.chapters.push(ch); } });
+  const BOOK = (window.BOOK = { chapters: [], labs: {}, add(ch) { this.chapters.push(ch); }, addLab(l) { this.labs[l.ch] = l; } });
   const W = 760;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -250,6 +250,7 @@
         <h2>${esc(c.title)}</h2>
         <p class="ch-one">${fmt(c.one)}</p>
         <div class="ch-meta">그림 ${c.cards.length}장 · 내 필기 ${mine}장 · <span id="copied-count"></span></div>
+        ${BOOK.labs[c.no] ? `<a class="lab-link" href="#ch${String(c.no).padStart(2, "0")}-lab"><b>실습 노트북</b><span>코드와 실행 결과를 같이 보기 →</span></a>` : ""}
         <div class="toc">${c.cards.map(k => `<a href="#ch${String(c.no).padStart(2, "0")}" data-jump="c-${esc(k.id)}">${esc(k.sec)} ${esc(k.title)}${k.mine ? " ✓" : ""}</a>`).join("")}</div>
       </section>
       ${c.terms ? `<section class="terms" aria-label="${esc(c.terms.title)}"><h3 class="terms-title"><span>${esc(c.terms.title)}</span></h3><dl>${c.terms.items.map(([t, d]) => `<div class="term${/^\s/.test(t) ? " sub" : ""}"><dt>${esc(t.trim().replace(/^·\s*/, ""))}</dt><dd>${fmt(d)}</dd></div>`).join("")}</dl></section>` : ""}
@@ -257,6 +258,43 @@
       <nav class="pager">${prev ? `<a href="#ch${String(prev.no).padStart(2, "0")}">← ${prev.no}장 ${esc(prev.short || prev.title)}</a>` : "<span></span>"}${next ? `<a href="#ch${String(next.no).padStart(2, "0")}">${next.no}장 ${esc(next.short || next.title)} →</a>` : "<span></span>"}</nav>`;
     updateCopied(c);
   }
+  /* ---------- 실습 (노트북 실행 기록) ---------- */
+  function hlPy(src) {
+    return src.split("\n").map(line => {
+      let q = null, cut = -1;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (q) { if (ch === "\\") i++; else if (ch === q) q = null; }
+        else if (ch === '"' || ch === "'") q = ch;
+        else if (ch === "#") { cut = i; break; }
+      }
+      return cut < 0 ? esc(line) : esc(line.slice(0, cut)) + `<span class="cm">${esc(line.slice(cut))}</span>`;
+    }).join("\n");
+  }
+  function labView(no) {
+    const c = BOOK.chapters.find(x => x.no === no), lab = BOOK.labs[no];
+    if (!c || !lab) return chapterView(no);
+    nav(no);
+    const nn = String(no).padStart(2, "0");
+    let n = 0;
+    const body = lab.cells.map(k => {
+      if (k.t === "md") return `<div class="lab-md">${k.html}</div>`;
+      n++;
+      const out = k.out || k.imgs.length
+        ? `<div class="lab-out"><span class="lab-tag">결과</span>${k.out ? `<pre>${esc(k.out)}</pre>` : ""}${k.imgs.map(u => `<img src="${esc(u)}" alt="셀 ${n} 실행 결과 그래프" loading="lazy">`).join("")}</div>`
+        : "";
+      return `<div class="lab-cell"><div class="lab-in"><span class="lab-tag">[${n}]</span><pre><code>${hlPy(k.src)}</code></pre></div>${out}</div>`;
+    }).join("");
+    $("#main").innerHTML = `<section class="ch-head">
+        <a class="lab-back" href="#ch${nn}">← ${c.no}장 그림 노트로</a>
+        <div class="ch-no">${c.no}장 · 실습</div>
+        <h2>${esc(lab.title)}</h2>
+        <div class="ch-meta">실행 기록: ${esc(lab.run)} · 원본 <code>${esc(lab.file)}</code></div>
+      </section>
+      <article class="lab">${body}</article>
+      <nav class="pager"><a href="#ch${nn}">← ${c.no}장 그림 노트로</a><span></span></nav>`;
+  }
+
   function updateCopied(c) {
     const el = $("#copied-count");
     if (!el) return;
@@ -325,8 +363,8 @@
 
   function route() {
     const h = location.hash.replace("#", "");
-    const m = h.match(/^ch(\d\d)$/);
-    if (m) chapterView(+m[1]); else homeView();
+    const m = h.match(/^ch(\d\d)(-lab)?$/);
+    if (m) (m[2] ? labView : chapterView)(+m[1]); else homeView();
     window.scrollTo(0, 0);
   }
 
