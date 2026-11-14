@@ -3,6 +3,13 @@ BOOK.add({
   title: "텍스트 생성",
   short: "텍스트 생성 · LLM",
   one: "트랜스포머 + 다음 토큰 예측 + 대량 텍스트 = LLM",
+  terms: {
+    title: "이 장의 용어",
+    items: [
+      ["로짓", "softmax 전의 ==정규화 안 된 로그 확률==. 지수 함수 + 합이 1이 되게 정규화 = softmax → 확률"],
+      ["  · from_logits", "모델이 로짓을 내면 손실에 `SparseCategoricalCrossentropy(from_logits=True)`. 텍스트 생성 땐 로짓이 다루기 쉬움"],
+    ],
+  },
   cards: [
     {
       id: "16.2-mini-gpt", sec: "16.2", title: "미니 GPT",

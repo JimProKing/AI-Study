@@ -210,12 +210,18 @@
       return `<div class="pt l${lvl}">${fmt(t)}</div>`;
     }).join("");
     const done = store.get("copied:" + card.id) === "1";
-    const mine = card.mine ? `<a class="mine-badge" href="${esc(card.mine.img)}" target="_blank" rel="noopener">내 필기 ✓</a>` : "";
+    const mine = !card.mine ? "" : opt.compact
+      ? `<a class="mine-badge" href="${esc(card.mine.img)}" target="_blank" rel="noopener">내 필기 ✓</a>`
+      : `<a class="mine-badge" href="#" data-jump="m-${esc(card.id)}">내 필기 ✓</a>`;
+    const photo = card.mine && !opt.compact
+      ? `<figure class="photo mine-photo" id="m-${esc(card.id)}"><img src="${esc(card.mine.img)}" alt="${esc(card.title)} 손필기 사진" loading="lazy"><figcaption>내 공책 · ${esc(card.title)} · ${esc(card.mine.date || "")}</figcaption></figure>`
+      : "";
     return `<article class="page${opt.compact ? " compact" : ""}" id="c-${esc(card.id)}">
       <header class="page-head"><span class="sec" title="책 위치">${esc(String(card.sec).split(".")[0])}장 · §${esc(card.sec)}</span><h3 class="title"><span>${esc(card.title)}</span></h3>${mine}</header>
       <div class="hl-box">${figSVG(card.fig)}</div>
       ${pts ? `<div class="pts">${pts}</div>` : ""}
       ${card.end ? `<p class="end">${fmt(card.end)}</p>` : ""}
+      ${photo}
       ${opt.compact ? "" : `<footer class="page-foot"><label class="copy"><input type="checkbox" id="cp-${esc(card.id)}" data-id="${esc(card.id)}"${done ? " checked" : ""}> 공책에 옮겨 적음</label>${card.mine ? `<span class="foot-mine">내 필기 ${esc(card.mine.date || "")}</span>` : `<span class="foot-todo">사진 올리면 여기에 내 필기가 붙어요</span>`}</footer>`}
     </article>`;
   }
@@ -246,6 +252,7 @@
         <div class="ch-meta">그림 ${c.cards.length}장 · 내 필기 ${mine}장 · <span id="copied-count"></span></div>
         <div class="toc">${c.cards.map(k => `<a href="#ch${String(c.no).padStart(2, "0")}" data-jump="c-${esc(k.id)}">${esc(k.sec)} ${esc(k.title)}${k.mine ? " ✓" : ""}</a>`).join("")}</div>
       </section>
+      ${c.terms ? `<section class="terms" aria-label="${esc(c.terms.title)}"><h3 class="terms-title"><span>${esc(c.terms.title)}</span></h3><dl>${c.terms.items.map(([t, d]) => `<div class="term${/^\s/.test(t) ? " sub" : ""}"><dt>${esc(t.trim().replace(/^·\s*/, ""))}</dt><dd>${fmt(d)}</dd></div>`).join("")}</dl></section>` : ""}
       <div class="pages">${c.cards.map(k => cardHTML(k)).join("")}</div>
       <nav class="pager">${prev ? `<a href="#ch${String(prev.no).padStart(2, "0")}">← ${prev.no}장 ${esc(prev.short || prev.title)}</a>` : "<span></span>"}${next ? `<a href="#ch${String(next.no).padStart(2, "0")}">${next.no}장 ${esc(next.short || next.title)} →</a>` : "<span></span>"}</nav>`;
     updateCopied(c);
