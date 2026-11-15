@@ -6,6 +6,7 @@
  *   pts    : ["· 줄", "  · 들여쓴 줄"]  ==민트 밑줄==  !!빨간 펜!!  `코드`  **굵게**
  *   end    : 빨간 펜 결론 한 줄
  *   mine   : { img, date }  → 내가 공책에 쓴 필기 사진
+ *   widget : "bce"  → BOOK.widgets[이름](el) 로 그리는 인터랙티브 블록 (widgets.js)
  */
 (function () {
   const BOOK = (window.BOOK = { chapters: [], labs: {}, add(ch) { this.chapters.push(ch); }, addLab(l) { this.labs[l.ch] = l; } });
@@ -221,6 +222,7 @@
       <div class="hl-box">${figSVG(card.fig)}</div>
       ${pts ? `<div class="pts">${pts}</div>` : ""}
       ${card.end ? `<p class="end">${fmt(card.end)}</p>` : ""}
+      ${card.widget && !opt.compact ? `<div class="widget" data-widget="${esc(card.widget)}"></div>` : ""}
       ${photo}
       ${opt.compact ? "" : `<footer class="page-foot"><label class="copy"><input type="checkbox" id="cp-${esc(card.id)}" data-id="${esc(card.id)}"${done ? " checked" : ""}> 공책에 옮겨 적음</label>${card.mine ? `<span class="foot-mine">내 필기 ${esc(card.mine.date || "")}</span>` : `<span class="foot-todo">사진 올리면 여기에 내 필기가 붙어요</span>`}</footer>`}
     </article>`;
@@ -320,6 +322,14 @@
         <div class="stats"><div><b>${BOOK.chapters.length}</b><span>장</span></div><div><b>${cards.length}</b><span>그림</span></div><div><b>${mine.length}</b><span>내 필기</span></div></div>
       </section>
 
+      <section class="block block-toc">
+        <h2 class="bh"><span>목차</span></h2>
+        <div class="chgrid">${BOOK.chapters.map(c => {
+          const m = c.cards.filter(k => k.mine).length;
+          return `<a href="#ch${String(c.no).padStart(2, "0")}" class="chcard"><span class="cn">${c.no}장</span><b>${esc(c.title)}</b><span class="co">${fmt(c.one)}</span><span class="cm">그림 ${c.cards.length}${m ? ` · <i>내 필기 ${m}</i>` : ""}</span></a>`;
+        }).join("")}</div>
+      </section>
+
       <section class="block">
         <h2 class="bh"><span>내 필기 → 정리본</span></h2>
         <p class="bp">직접 쓴 필기와, 같은 내용을 같은 문법으로 다시 그린 정리본이에요. <span class="pen">빨간 글씨 중 "+책"</span> 표시는 책에서 보충한 부분이에요.</p>
@@ -350,14 +360,6 @@
           <li><b>사진 올리기</b><span><code>notes/</code> 폴더에 사진을 넣어요.</span></li>
           <li><b>Claude에게 "등록해줘"</b><span>해당 그림에 <span class="mine-inline">내 필기 ✓</span>가 붙고, 빠진 부분이나 틀린 부분이 있으면 알려줘요.</span></li>
         </ol>
-      </section>
-
-      <section class="block">
-        <h2 class="bh"><span>목차</span></h2>
-        <div class="chgrid">${BOOK.chapters.map(c => {
-          const m = c.cards.filter(k => k.mine).length;
-          return `<a href="#ch${String(c.no).padStart(2, "0")}" class="chcard"><span class="cn">${c.no}장</span><b>${esc(c.title)}</b><span class="co">${fmt(c.one)}</span><span class="cm">그림 ${c.cards.length}${m ? ` · <i>내 필기 ${m}</i>` : ""}</span></a>`;
-        }).join("")}</div>
       </section>`;
   }
 
@@ -365,6 +367,10 @@
     const h = location.hash.replace("#", "");
     const m = h.match(/^ch(\d\d)(-lab)?$/);
     if (m) (m[2] ? labView : chapterView)(+m[1]); else homeView();
+    document.querySelectorAll("#main .widget[data-widget]").forEach(el => {
+      const w = (BOOK.widgets || {})[el.dataset.widget];
+      if (w) try { w(el); } catch (e) { console.error(e); }
+    });
     window.scrollTo(0, 0);
   }
 

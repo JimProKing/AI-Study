@@ -88,6 +88,45 @@ code { font-family: var(--f-mono); font-size: .86em; background: var(--blue-a); 
 .pt.l1 { margin-left: 26px; } .pt.l2 { margin-left: 52px; }
 .end { margin: 12px 0 0; color: var(--red); font-family: var(--f-hand); font-size: 21px; line-height: 1.35; }
 .end code { color: var(--ink); font-size: .7em; }
+
+/* 인터랙티브 블록 (widgets.js) */
+.widget { margin-top: 16px; border: 2px dashed var(--mint); border-radius: 10px; padding: 14px 16px 12px; background: var(--paper); }
+.w-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.w-head b { font-family: var(--f-mono); font-size: 15px; }
+.w-tag { font-family: var(--f-hand); font-size: 18px; font-weight: 700; color: var(--teal); }
+.w-math { margin-top: 8px; overflow-x: auto; }
+.w-math math { font-size: 17px; color: var(--ink); margin: 2px 0 8px; }
+.w-eq-label { font-size: 12px; color: var(--muted); }
+.w-legend { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 18px; }
+.w-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 12px; }
+.w-seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; }
+.w-seg button { font: inherit; font-size: 13px; padding: 6px 12px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.w-seg button + button { border-left: 1.5px solid var(--ink); }
+.w-seg button.on { background: var(--mint-a); font-weight: 700; }
+.widget.y0 .w-seg button.on { background: var(--red-a); }
+.w-slider { display: flex; align-items: center; gap: 10px; font-size: 14px; flex: 1 1 260px; }
+.w-slider output { font-family: var(--f-mono); font-weight: 600; min-width: 3ch; }
+.w-slider input { flex: 1; accent-color: var(--teal); min-width: 120px; }
+.widget.y0 .w-slider input { accent-color: var(--red); }
+.w-sub { margin-top: 12px; display: flex; flex-direction: column; gap: 2px; }
+.w-eq { font-family: var(--f-mono); font-size: 14px; }
+.w-eq b { font-size: 16px; color: var(--red); }
+.w-eq .t.dead { color: var(--faint); text-decoration: line-through; }
+.w-note { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.w-plot { display: block; width: 100%; max-width: 520px; height: auto; margin-top: 8px; }
+.w-plot text { font-size: 11px; fill: var(--muted); font-family: var(--f-body); }
+.w-plot .lab { font-size: 12px; }
+.w-plot .g { stroke: var(--rule); stroke-width: 1; }
+.w-plot .ax { stroke: var(--ink); stroke-width: 1.5; }
+.w-plot .c { fill: none; stroke-width: 2; opacity: .25; }
+.w-plot .c1 { stroke: var(--teal); } .w-plot .c0 { stroke: var(--red); }
+.widget:not(.y0) .w-plot .c1, .widget.y0 .w-plot .c0 { stroke-width: 3.5; opacity: 1; }
+.w-plot .cl1 { fill: var(--teal); } .w-plot .cl0 { fill: var(--red); }
+.widget:not(.y0) .w-plot .cl0, .widget.y0 .w-plot .cl1 { opacity: .35; }
+.w-plot .vl { stroke: var(--ink); stroke-dasharray: 4 4; }
+.w-plot .pt { fill: var(--ink); stroke: var(--paper); stroke-width: 2; }
+.w-plot .pv { font-family: var(--f-mono); font-size: 13px; font-weight: 600; fill: var(--ink); }
+.w-verdict { margin: 6px 0 0; font-family: var(--f-hand); font-size: 20px; color: var(--red); line-height: 1.3; }
 .page-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--faint); font-size: 13px; color: var(--muted); }
 .copy { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
 .copy input { accent-color: var(--teal); width: 16px; height: 16px; }
@@ -182,6 +221,7 @@ code { font-family: var(--f-mono); font-size: .86em; background: var(--blue-a); 
 .stats b { font-family: var(--f-hand); font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
 .stats span { font-size: 12px; color: var(--muted); }
 .block { margin-top: 44px; }
+.block-toc { margin-top: 28px; }
 .bh { margin: 0 0 6px; font-family: var(--f-hand); font-size: 30px; font-weight: 700; }
 .bh span { background: linear-gradient(transparent 55%, var(--hl-a) 55%); padding: 0 .1em; }
 .bp { margin: 0 0 16px; color: var(--muted); max-width: 66ch; }
@@ -269,3 +309,4 @@ code { font-family: var(--f-mono); font-size: .86em; background: var(--blue-a); 
 <script src="data/ch19.js"></script>
 <script src="data/ch20.js"></script>
 <script src="data/lab03.js"></script>
+<script src="widgets.js"></script>
