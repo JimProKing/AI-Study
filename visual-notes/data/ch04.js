@@ -145,6 +145,7 @@ BOOK.add({
     },
     {
       id: "4.4-cheatsheet", sec: "4.4", title: "4장 정리표",
+      mine: { img: "my-notes/cheatsheet-ch04.png", date: "2026-11-17" },
       fig: { h: 232, alt: "문제 유형별 마지막 층과 손실 함수 표", f: k => {
         const cols = [[20, 200], [220, 230], [450, 290]];
         const rows = [
@@ -164,6 +165,7 @@ BOOK.add({
         "· 범위가 다른 특성 → 각각 스케일 조정",
         "· 데이터가 적으면: 중간층 1~2개, K-겹 검증",
         "· 클래스가 많으면: 중간층을 너무 작게 X (병목)",
+        "· !!+책!! 회귀 손실 이름은 `mean_squared_error` (squared, 줄여서 `mse`)",
       ],
       end: "*결국, 이 표 하나만 외워도 4장 끝!",
     },
