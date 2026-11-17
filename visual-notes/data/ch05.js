@@ -78,6 +78,7 @@ BOOK.add({
     },
     {
       id: "5.3-train-better", sec: "5.3", title: "훈련 성능 향상: 증상 → 처방",
+      mine: { img: "my-notes/train-better.png", date: "2026-11-17" },
       fig: { h: 216, alt: "훈련이 안 될 때, 일반화가 안 될 때, 과대적합이 안 될 때 각각의 처방", f: k => {
         const rows = [
           ["① 훈련이 시작 안 됨", "손실이 안 줄어듦", "학습률 · 배치 크기 조정", "학습률이 너무 크거나 작은 게 흔한 원인"],
