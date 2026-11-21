@@ -6,6 +6,7 @@ BOOK.add({
   cards: [
     {
       id: "7.1-disclosure", sec: "7.1", title: "복잡성의 단계적 공개",
+      mine: { img: "my-notes/disclosure.jpg", date: "2026-11-20" },
       fig: { h: 222, alt: "모델 만들기와 훈련하기 모두 쉬운 방법부터 자유도가 높은 방법까지 단계가 있다", f: k => [
         k.text(20, 55, "모델 만들기", { bold: true, size: 14 }),
         k.flow(30, [
@@ -31,6 +32,7 @@ BOOK.add({
     },
     {
       id: "7.2-functional", sec: "7.2.2", title: "함수형 API",
+      mine: { img: "my-notes/functional.jpg", date: "2026-11-21" },
       fig: { h: 244, alt: "제목, 본문, 태그 세 입력을 합쳐 우선순위와 담당 부서 두 출력을 내는 모델", f: k => [
         k.oval(70, 40, 50, 22, "제목"), k.oval(70, 100, 50, 22, "본문"), k.oval(70, 160, 50, 22, "태그"),
         k.arrow(122, 44, 168, 86), k.arrow(122, 100, 168, 100), k.arrow(122, 156, 168, 114),
@@ -53,6 +55,7 @@ BOOK.add({
     },
     {
       id: "7.3-callbacks", sec: "7.3.2", title: "콜백",
+      mine: { img: "my-notes/callbacks.jpg", date: "2026-11-21" },
       fig: { h: 232, alt: "검증 손실이 최저일 때 모델을 저장하고, 개선이 없으면 훈련을 멈추는 콜백", f: k => [
         k.plot(60, 24, 400, 170, { xl: "에포크", yl: "val_loss",
           curves: [{ f: t => 0.25 + 1.2 * (t - 0.4) ** 2, color: "red", thick: true, to: 0.7 }],
@@ -72,6 +75,7 @@ BOOK.add({
     },
     {
       id: "7.4-custom-loop", sec: "7.4", title: "사용자 정의 훈련 루프",
+      mine: { img: "my-notes/custom-loop.jpg", date: "2026-11-21" },
       fig: { h: 248, alt: "배치, 정방향, 손실, 그레이디언트, 옵티마이저 적용으로 도는 훈련 루프", f: k => [
         k.box(300, 14, 180, 48, "배치 (x, y)", { fill: "yellow" }),
         k.box(520, 70, 200, 48, "model(x, training=True)", { mono: true, size: 12, sub: "정방향" }),

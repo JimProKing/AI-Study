@@ -6,6 +6,7 @@ BOOK.add({
   cards: [
     {
       id: "8.1-conv", sec: "8.1.1", title: "합성곱 연산",
+      mine: { img: "my-notes/conv-op.jpg", date: "2026-11-21" },
       fig: { h: 240, alt: "5×5 입력 위를 3×3 필터가 움직이며 점곱 합을 구해 3×3 특성 맵을 만든다", f: k => [
         k.text(20, 24, "입력 (5×5)", { size: 12, color: "muted" }),
         k.grid(20, 40, 5, 5, [1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1], { cw: 30, hi: [0, 1, 2, 5, 6, 7, 10, 11, 12] }),
@@ -30,6 +31,7 @@ BOOK.add({
     },
     {
       id: "8.1-maxpool", sec: "8.1.2", title: "최대 풀링",
+      mine: { img: "my-notes/maxpool.jpg", date: "2026-11-21" },
       fig: { h: 204, alt: "4×4 특성 맵을 2×2 칸마다 최댓값만 남겨 2×2로 줄인다", f: k => [
         k.grid(60, 30, 2, 2, [1, 3, 5, 6], { cw: 36, fill: "yellow" }),
         k.grid(132, 30, 2, 2, [2, 4, 1, 2], { cw: 36, fill: "mint" }),
@@ -54,6 +56,7 @@ BOOK.add({
     },
     {
       id: "8.2-convnet", sec: "8.2", title: "컨브넷 구조 (강아지 vs 고양이)",
+      mine: { img: "my-notes/convnet.jpg", date: "2026-11-21" },
       fig: { h: 228, alt: "특성 맵의 크기는 줄고 깊이는 늘어나다가 Flatten과 Dense로 분류한다", f: k => {
         const blocks = [["180×180×3", 12, 150], ["89×89×32", 18, 120], ["43×43×64", 24, 96], ["20×20×128", 30, 72], ["9×9×256", 36, 52], ["7×7×256", 36, 40]];
         const xs = [24, 96, 166, 234, 300, 362];
@@ -79,6 +82,7 @@ BOOK.add({
     },
     {
       id: "8.2-augment", sec: "8.2.5", title: "데이터 증강",
+      mine: { img: "my-notes/augment.jpg", date: "2026-11-21" },
       fig: { h: 212, alt: "고양이 사진 한 장을 뒤집기, 회전, 확대로 여러 장처럼 만든다", f: k => {
         const cat = `<circle class="sh f-orange" cx="0" cy="4" r="24"/><path class="sh f-orange" d="M-20 -8L-16 -30L-4 -18ZM20 -8L16 -30L4 -18Z"/><circle class="dot d-ink" cx="-8" cy="2" r="3"/><circle class="dot d-ink" cx="8" cy="2" r="3"/><path class="ln s-ink" d="M-4 12Q0 16 4 12"/><circle class="dot d-red" cx="14" cy="-16" r="3.5"/>`;
         const g = (cx, cy, t) => k.raw(`<g transform="translate(${cx} ${cy}) ${t}">${cat}</g>`);
@@ -99,9 +103,11 @@ BOOK.add({
         "· 드롭아웃과 같이 쓰면 효과 ↑",
       ],
       end: "*결국, 같은 사진을 다르게 보여줘서 일반화 ↑",
+      code: "data_augmentation = keras.Sequential([\n    layers.RandomFlip(\"horizontal\"),  # 좌우 뒤집기\n    layers.RandomRotation(0.1),       # 최대 ±10% 회전(약 36°)\n    layers.RandomZoom(0.2),           # 최대 20% 확대·축소\n])\ninputs = keras.Input(shape=(180, 180, 3))\nx = data_augmentation(inputs)   # ← 맨 앞\nx = layers.Rescaling(1./255)(x)\n...",
     },
     {
       id: "8.3-pretrained", sec: "8.3", title: "사전 훈련된 모델 활용",
+      mine: { img: "my-notes/pretrained.jpg", date: "2026-11-21" },
       fig: { h: 228, alt: "특성 추출은 합성곱 기반 전체를 동결하고, 미세 튜닝은 상위 층 일부를 풀어 다시 학습한다", f: k => [
         k.text(20, 45, "① 특성 추출", { bold: true, size: 14 }),
         k.box(150, 20, 300, 50, "Xception 합성곱 기반", { fill: "blue", sub: "전체 동결" }),

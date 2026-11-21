@@ -222,6 +222,7 @@
       <div class="hl-box">${figSVG(card.fig)}</div>
       ${pts ? `<div class="pts">${pts}</div>` : ""}
       ${card.end ? `<p class="end">${fmt(card.end)}</p>` : ""}
+      ${card.code ? `<div class="lab-cell code-cell"><div class="lab-in"><span class="lab-tag">python</span><pre><code>${hlPy(card.code)}</code></pre></div></div>` : ""}
       ${card.widget && !opt.compact ? `<div class="widget" data-widget="${esc(card.widget)}"></div>` : ""}
       ${photo}
       ${opt.compact ? "" : `<footer class="page-foot"><label class="copy"><input type="checkbox" id="cp-${esc(card.id)}" data-id="${esc(card.id)}"${done ? " checked" : ""}> 공책에 옮겨 적음</label>${card.mine ? `<span class="foot-mine">내 필기 ${esc(card.mine.date || "")}</span>` : `<span class="foot-todo">사진 올리면 여기에 내 필기가 붙어요</span>`}</footer>`}
