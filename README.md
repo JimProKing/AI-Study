@@ -24,7 +24,7 @@
 |---|---|
 | `notes/` | 손필기 사진 원본 (`ch01/` … 장별 폴더) |
 | `visual-notes/` | 책을 내 필기 문법으로 다시 그린 그림 노트. 20개 장, 카드 85장 |
-| `projects/` | 장별 실험 노트북 (`ch03-frameworks/` …) |
+| `projects/` | 장별 실험 노트북 (`ch03-frameworks/` · `ch05-generalization/` · `ch06-workflow/` · `ch07-keras-deep-dive/` · `ch08-convnets/`) |
 | `books-practice/` | 책 실습 코드 |
 | `math/` | 수학 정리 |
 
@@ -52,4 +52,4 @@ visual-notes/
 |---|---|
 | 그림 노트 | 85장 / 20개 장 |
 | 손필기 등록 | 30장 (1장 1 · 2장 1 · 3장 5 · 4장 5 · 5장 5 · 6장 4 · 7장 4 · 8장 5) |
-| 실험 노트북 | 1개 (3장) |
+| 실험 노트북 | 5개 (3장 · 5장 · 6장 · 7장 · 8장) |
